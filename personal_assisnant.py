@@ -135,19 +135,23 @@ class TasksManager:
             print("Нет задач.")
             return
         for task in tasks:
-            print(f"ID: {task['id']} | Приоритет: {task['priority']} | Описание: {task['description']} | Дедлайн: {task['due_date']} | Создано: {task['created_at']}")
+            print(f"ID: {task['id']} | Приоритет: {task['priority']} | Описание: {task['description']} | Дедлайн: {task['due_date']} | Создано: {task['created_at']} | Статус задачи: {task['done']}")
 
     @staticmethod
     def mark_task_as_done():
         task_id = input("Введите ID выполненной задачи: ")
         tasks = load_data(Task.FILE_PATH)
+        task_indicator = False
         for task in tasks:
-            if task['id'] == task_id:
+            if str(task['id']) == task_id:
                 task['done'] = 'done'
-        updated_tasks = [task for task in tasks if str(task['id']) != task_id]
-        save_data(Task.FILE_PATH, updated_tasks)
-        print("Задача удаленa")
-
+                task_indicator = True
+                break
+        if task_indicator:
+            save_data(Task.FILE_PATH, tasks)
+            print("Статус задачи изменен")
+        else:
+            print(f"Задача с ID: {task_id} не найдена")
 
     @staticmethod
     def delete_task():
@@ -217,13 +221,20 @@ class ContactsManager:
         print("Контакт успешно добавлен")
 
     @staticmethod
-    def view_contacts():
+    def search_contact():
         contacts = load_data(Contact.FILE_PATH)
         if not contacts:
             print("Нет контактов")
             return
+        search_contact = input("Введите имя ИЛИ номер телефона: ")
+        indicator = False
         for contact in contacts:
-            print(f"ID: {contact['id']} | Имя: {contact['name']} | Телефон: {contact['phone']} | Email: {contact['email']}")
+            if contact['name'] == search_contact or contact['phone'] == search_contact:
+                print(f"Контакт успешно найден! ID: {contact['id']} | Имя: {contact['name']} | Телефон: {contact['phone']} | Email: {contact['email']}")
+                indicator = True
+                break
+        if not indicator:
+            print(f"Контакт {search_contact} не найден!")
 
     @staticmethod
     def delete_contact():
@@ -470,7 +481,7 @@ def contacts_menu():
         print('''
 Управление контактами:
 1. Добавить контакт
-2. Посмотреть контакты
+2. Поиск контакта по имени ИЛИ номеру телефона
 3. Удалить контакт
 4. Создание CSV-файла
 5. Импорт из CSV-файла
@@ -480,7 +491,7 @@ def contacts_menu():
         if choice == "1":
             ContactsManager.add_contact()
         elif choice == "2":
-            ContactsManager.view_contacts()
+            ContactsManager.search_contact()
         elif choice == "3":
             ContactsManager.delete_contact()
         elif choice == "4":
