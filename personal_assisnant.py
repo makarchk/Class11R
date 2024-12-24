@@ -333,6 +333,42 @@ class FinanceManager:
         save_data(Finance.FILE_PATH, transactions)
         print("Транзакции успешно импортированы!")
 
+    @staticmethod
+    def generate_report():
+        start_date = input("Введите начальную дату (ДД-ММ-ГГГГ): ")
+        end_date = input("Введите конечную дату (ДД-ММ-ГГГГ): ")
+
+        if not (validate_date(start_date) and validate_date(end_date)):
+            print("Некорректные даты.")
+            return
+
+        transactions = load_data(Finance.FILE_PATH)
+        filtered_transactions = [
+            t for t in transactions
+            if start_date <= t['date'] <= end_date
+        ]
+
+        if not filtered_transactions:
+            print("Нет транзакций за указанный период.")
+            return
+
+        total_income = sum(t['amount'] for t in filtered_transactions if t['amount'] > 0)
+        total_expenses = sum(abs(t['amount']) for t in filtered_transactions if t['amount'] < 0)
+        balance = total_income - total_expenses
+
+        print(f"Финансовый отчёт за период с {start_date} по {end_date}:")
+        print(f"- Общий доход: {total_income:.2f} руб.")
+        print(f"- Общие расходы: {total_expenses:.2f} руб.")
+        print(f"- Баланс: {balance:.2f} руб.")
+
+        report_file = f"report_{start_date}_{end_date}.csv"
+        with open(report_file, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['description', 'amount', 'date', 'category'])
+            writer.writeheader()
+            writer.writerows(filtered_transactions)
+
+        print(f"Подробная информация сохранена в файле {report_file}.")
+
 
 class Calculator:
     @staticmethod
@@ -345,7 +381,7 @@ class Calculator:
             print(f"Ошибка вычисления: {e}")
 
 
-# Меню
+
 def main_menu():
     while True:
         print('''
@@ -464,7 +500,8 @@ def finance_menu():
 2. Посмотреть транзакции
 3. Создание CSV-файла 
 4. Импорт CSV-файла
-5. Назад''')
+5. Генерация финансового отчета
+6. Назад''')
         choice = input("Выберите действие: ")
         if choice == "1":
             FinanceManager.add_transaction()
@@ -475,6 +512,8 @@ def finance_menu():
         elif choice == "4":
             FinanceManager.import_from_csv_finance()
         elif choice == "5":
+            FinanceManager.generate_report()
+        elif choice == "6":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
