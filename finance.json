@@ -1,7 +1,14 @@
 [
     {
-        "description": "Transfer",
-        "amount": 8000.0,
-        "date": "24-12-2024"
+        "description": "a",
+        "amount": 2.0,
+        "date": "12-12-2023",
+        "category": "tld"
+    },
+    {
+        "description": "absent",
+        "amount": 12000.0,
+        "date": "12-12-2024",
+        "category": "Пенсия"
     }
 ]

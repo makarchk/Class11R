@@ -67,7 +67,7 @@ class NotesManager:
     @staticmethod
     def export_to_csv():
         notes = load_data(Note.FILE_PATH)
-        file_name = 'notes_export.csv'
+        file_name = input("Введите имя CSV-файла для импорта: ")
         with open(file_name, 'w', newline='', encoding='utf-8') as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=['id', 'title', 'content', 'timestamp'])
             writer.writeheader()
@@ -136,6 +136,16 @@ class TasksManager:
         save_data(Task.FILE_PATH, updated_tasks)
         print("Задача удаленa")
 
+    @staticmethod
+    def export_to_csv_tasks():
+        tasks = load_data(Task.FILE_PATH)
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        with open(file_name, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['id', 'title', 'description', 'done', 'priority', 'due_date', 'created_at'])
+            writer.writeheader()
+            writer.writerows(tasks)
+        print(f"Заметки экспортированы в {file_name}!")
+
 
 
 class Contact:
@@ -179,31 +189,63 @@ class ContactsManager:
         save_data(Contact.FILE_PATH, updated_contacts)
         print("Контакт удалён")
 
+    @staticmethod
+    def export_to_csv_contacts():
+        contacts = load_data(Contact.FILE_PATH)
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        with open(file_name, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['id', 'name', 'phone', 'email'])
+            writer.writeheader()
+            writer.writerows(contacts)
+        print(f"Заметки экспортированы в {file_name}!")
+
+
+class Finance:
+    FILE_PATH = 'finance.json'
+    def __init__(self, description, amount, date, category):
+        self.description = description
+        self.amount = amount
+        self.date = date
+        self.category = category
+
+    def to_dict(self):
+        return self.__dict__
 
 class FinanceManager:
-    FILE_PATH = 'finance.json'
 
     @staticmethod
     def add_transaction():
         description = input("Введите описание транзакции: ")
         amount = float(input("Введите сумму транзакции: "))
         date = input("Введите дату (формат: DD-MM-YYYY): ")
+        category = input('Введите категорию операции (например, "Еда", "Транспорт", "Зарплата"): ')
+        transaction = Finance(description, amount, date, category)
         if not validate_date(date):
             print("Некорректная дата. Транзакция не добавлена")
             return
-        transactions = load_data(FinanceManager.FILE_PATH)
-        transactions.append({"description": description, "amount": amount, "date": date})
-        save_data(FinanceManager.FILE_PATH, transactions)
+        transactions = load_data(Finance.FILE_PATH)
+        transactions.append(transaction.to_dict())
+        save_data(Finance.FILE_PATH, transactions)
         print("Транзакция добавлена")
 
     @staticmethod
     def view_transactions():
-        transactions = load_data(FinanceManager.FILE_PATH)
+        transactions = load_data(Finance.FILE_PATH)
         if not transactions:
             print("Нет транзакций.")
             return
         for transaction in transactions:
-            print(f"Описание: {transaction['description']} | Сумма: {transaction['amount']} | Дата: {transaction['date']}")
+            print(f"Описание: {transaction['description']} | Сумма: {transaction['amount']} | Дата: {transaction['date']} | Категория: {transaction['category']}")
+
+    @staticmethod
+    def export_to_csv_finance():
+        transactions = load_data(Finance.FILE_PATH)
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        with open(file_name, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['description', 'amount', 'date', 'category'])
+            writer.writeheader()
+            writer.writerows(transactions)
+        print(f"Заметки экспортированы в {file_name}!")
 
 
 class Calculator:
@@ -276,7 +318,8 @@ def tasks_menu():
 2. Просмотреть задачи
 3. Отметить задачу как выполненную
 4. Удалить задачу
-5. Назад
+5. Создание CSV-файла
+6. Назад
 ''')
         choice = input("Выберите действие: ")
         if choice == "1":
@@ -288,6 +331,8 @@ def tasks_menu():
         elif choice == "4":
             TasksManager.delete_task()
         elif choice == "5":
+            TasksManager.export_to_csv_tasks()
+        elif choice == "6":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
@@ -299,7 +344,8 @@ def contacts_menu():
 1. Добавить контакт
 2. Посмотреть контакты
 3. Удалить контакт
-4. Назад
+4. Создание CSV-файла
+5. Назад
 ''')
         choice = input("Выберите действие: ")
         if choice == "1":
@@ -309,6 +355,8 @@ def contacts_menu():
         elif choice == "3":
             ContactsManager.delete_contact()
         elif choice == "4":
+            ContactsManager.export_to_csv_contacts()
+        elif choice == "5":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
@@ -319,13 +367,16 @@ def finance_menu():
 Управление финансами:
 1. Добавить транзакцию
 2. Посмотреть транзакции
-3. Назад''')
+3. Создание CSV-файла 
+4. Назад''')
         choice = input("Выберите действие: ")
         if choice == "1":
             FinanceManager.add_transaction()
         elif choice == "2":
             FinanceManager.view_transactions()
         elif choice == "3":
+            FinanceManager.export_to_csv_finance()
+        elif choice == "4":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
