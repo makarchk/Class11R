@@ -74,6 +74,27 @@ class NotesManager:
             writer.writerows(notes)
         print(f"Заметки экспортированы в {file_name}!")
 
+    @staticmethod
+    def import_from_csv_notes():
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        if not os.path.exists(file_name):
+            print("Файл не найден.")
+            return
+
+        notes = load_data(Note.FILE_PATH)
+        with open(file_name, 'r', encoding='utf-8') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                note = {
+                    'id': int(row['id']),
+                    'title': row['title'],
+                    'content': row['content'],
+                    'timestamp': row['timestamp']
+                }
+                notes.append(note)
+        save_data(Note.FILE_PATH, notes)
+        print("Заметки успешно импортированы!")
+
 
 class Task:
     FILE_PATH = 'tasks.json'
@@ -146,6 +167,29 @@ class TasksManager:
             writer.writerows(tasks)
         print(f"Заметки экспортированы в {file_name}!")
 
+    @staticmethod
+    def import_from_csv_tasks():
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        if not os.path.exists(file_name):
+            print("Файл не найден.")
+            return
+
+        tasks = load_data(Task.FILE_PATH)
+        with open(file_name, 'r', encoding='utf-8') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                task = {
+                    'id': int(row['id']),
+                    'title': row['title'],
+                    'description': row['description'],
+                    'done': row['done'],
+                    'priority': row['priority'],
+                    'due_date': row['due_date'],
+                    'created_at': row['created_at']
+                }
+                tasks.append(task)
+        save_data(Task.FILE_PATH, tasks)
+        print("Задачи успешно импортированы!")
 
 
 class Contact:
@@ -199,6 +243,27 @@ class ContactsManager:
             writer.writerows(contacts)
         print(f"Заметки экспортированы в {file_name}!")
 
+    @staticmethod
+    def import_from_csv_contacts():
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        if not os.path.exists(file_name):
+            print("Файл не найден.")
+            return
+
+        contacts = load_data(Contact.FILE_PATH)
+        with open(file_name, 'r', encoding='utf-8') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                contact = {
+                    'id': int(row['id']),
+                    'name': row['name'],
+                    'phone': row['phone'],
+                    'email': row['email']
+                }
+                contacts.append(contact)
+        save_data(Contact.FILE_PATH, contacts)
+        print("Контакты успешно импортированы!")
+
 
 class Finance:
     FILE_PATH = 'finance.json'
@@ -247,6 +312,27 @@ class FinanceManager:
             writer.writerows(transactions)
         print(f"Заметки экспортированы в {file_name}!")
 
+    @staticmethod
+    def import_from_csv_finance():
+        file_name = input("Введите имя CSV-файла для импорта: ")
+        if not os.path.exists(file_name):
+            print("Файл не найден.")
+            return
+
+        transactions = load_data(Finance.FILE_PATH)
+        with open(file_name, 'r', encoding='utf-8') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                transaction = {
+                    'description': row['description'],
+                    'amount': float(row['amount']),
+                    'date': row['date'],
+                    'category': row['category']
+                }
+                transactions.append(transaction)
+        save_data(Finance.FILE_PATH, transactions)
+        print("Транзакции успешно импортированы!")
+
 
 class Calculator:
     @staticmethod
@@ -294,7 +380,8 @@ def notes_menu():
 2. Посмотреть заметки
 3. Удалить заметку
 4. Экспорт заметок в CSV
-5. Назад''')
+5. Импорт заметок из CSV
+6. Назад''')
         choice = input("Выберите действие: ")
         if choice == "1":
             NotesManager.create_note()
@@ -305,6 +392,8 @@ def notes_menu():
         elif choice == "4":
             NotesManager.export_to_csv()
         elif choice == "5":
+            NotesManager.import_from_csv_notes()
+        elif choice == "6":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
@@ -319,7 +408,8 @@ def tasks_menu():
 3. Отметить задачу как выполненную
 4. Удалить задачу
 5. Создание CSV-файла
-6. Назад
+6. Импорт из CSV-файла
+7. Назад
 ''')
         choice = input("Выберите действие: ")
         if choice == "1":
@@ -333,6 +423,8 @@ def tasks_menu():
         elif choice == "5":
             TasksManager.export_to_csv_tasks()
         elif choice == "6":
+            TasksManager.import_from_csv_tasks()
+        elif choice == "7":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
@@ -345,7 +437,8 @@ def contacts_menu():
 2. Посмотреть контакты
 3. Удалить контакт
 4. Создание CSV-файла
-5. Назад
+5. Импорт из CSV-файла
+6. Назад
 ''')
         choice = input("Выберите действие: ")
         if choice == "1":
@@ -357,6 +450,8 @@ def contacts_menu():
         elif choice == "4":
             ContactsManager.export_to_csv_contacts()
         elif choice == "5":
+            ContactsManager.import_from_csv_contacts()
+        elif choice == "6":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
@@ -368,7 +463,8 @@ def finance_menu():
 1. Добавить транзакцию
 2. Посмотреть транзакции
 3. Создание CSV-файла 
-4. Назад''')
+4. Импорт CSV-файла
+5. Назад''')
         choice = input("Выберите действие: ")
         if choice == "1":
             FinanceManager.add_transaction()
@@ -377,6 +473,8 @@ def finance_menu():
         elif choice == "3":
             FinanceManager.export_to_csv_finance()
         elif choice == "4":
+            FinanceManager.import_from_csv_finance()
+        elif choice == "5":
             break
         else:
             print("Некорректный выбор. Попробуйте снова")
